@@ -13,7 +13,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends ListActivity {
+//ListActivity no tiene elmentos gráficos
+//Activity sí
+public class MainActivity extends Activity {
 
     private ListView listView;
 
