@@ -18,7 +18,7 @@ import java.util.ArrayList;
 public class MainActivity extends Activity {
 
     private ListView listView;
-
+    //Adapter es el que dice cómo se va a cargar
     private ArrayAdapter<String> arrayAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
