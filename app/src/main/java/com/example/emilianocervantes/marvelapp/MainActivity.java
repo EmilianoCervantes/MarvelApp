@@ -1,11 +1,13 @@
 package com.example.emilianocervantes.marvelapp;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.example.emilianocervantes.marvelapp.adapters.ItuneArrayAdapter;
+import com.example.emilianocervantes.marvelapp.pojo.Itune;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,43 +22,45 @@ public class MainActivity extends Activity {
     private ListView listView;
     //Adapter es el que dice cómo se va a cargar
     private ArrayAdapter<String> arrayAdapter;
+    private ItuneArrayAdapter ituneArrayAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = (ListView)findViewById(R.id.Lista);
-        /*Json json = new Json();
-        String jsonString = json.serviceCall("https://itunes.apple.com/search?term=maroon+5");
-        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,new ArrayList<String>());
 
-        arrayAdapter.add(jsonString);
-        setListAdapter(arrayAdapter);*/
-
-        arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,new ArrayList<String>());
-        listView.setAdapter(arrayAdapter);
+        ituneArrayAdapter = new ItuneArrayAdapter(this, R.layout.itunes_layout, new ArrayList<Itune>());
+        listView.setAdapter(ituneArrayAdapter);
         //setListAdapter(arrayAdapter);
 
-        new ProcesaJSON(arrayAdapter).execute("https://itunes.apple.com/search?term=maroon+5");
+        new ProcesaJSON(ituneArrayAdapter).execute("https://itunes.apple.com/search?term=maroon+5");
     }
 
-    public class ProcesaJSON extends AsyncTask<String,Integer,ArrayList<String>>{
-        private ArrayAdapter<String> adapt;
-        public ProcesaJSON(ArrayAdapter<String> adapter){
+    public class ProcesaJSON extends AsyncTask<String,Integer,ArrayList<Itune>>{
+        private ItuneArrayAdapter adapt;
+
+        public ProcesaJSON(ItuneArrayAdapter adapter){
             this.adapt = adapter;
         }
 
         @Override
-        protected ArrayList<String> doInBackground(String... urls) {
+        protected ArrayList<Itune> doInBackground(String... urls) {
             //Se encarga de conectarse al servicio
             Json json = new Json();
             String jsonString = json.serviceCall(urls[0]);
-            ArrayList<String> arrayList = new ArrayList<>();
+            ArrayList<Itune> arrayList = new ArrayList<>();
             try {
                 JSONObject jsonObject = new JSONObject();
                 JSONArray jsonArray = jsonObject.getJSONArray("results");
                 for (int i = 0; i<jsonArray.length(); i++){
                     JSONObject dato = jsonArray.getJSONObject(i);
-                    arrayList.add(dato.getString("collection"));
+                    Itune itune = new Itune();
+                    //Los names son los del Json
+                    itune.collectionName = dato.getString("collectionName");
+                    itune.trackName = dato.getString("trackPrice");
+                    itune.trackPrice = dato.getDouble("trackPrice");
+
+                    arrayList.add(itune);
                 }
             } catch (JSONException e){
                 e.printStackTrace();
@@ -67,10 +71,10 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> strings) {
-            arrayAdapter.clear();
-            arrayAdapter.addAll(strings);
-            arrayAdapter.notifyDataSetChanged();
+        protected void onPostExecute(ArrayList<Itune> strings) {
+            adapt.clear();
+            adapt.addAll(strings);
+            adapt.notifyDataSetChanged();
         }
     }
 }
