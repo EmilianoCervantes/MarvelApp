@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,7 +39,7 @@ public class MainActivity extends Activity {
 
     private ListView listView;
     //Adapter es el que dice cómo se va a cargar
-    private ArrayAdapter<String> arrayAdapter;
+    private ArrayAdapter<String> adapter;
     private ItuneArrayAdapter ituneArrayAdapter;
 
     private RequestQueue mQueue;
@@ -59,12 +60,12 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = (ListView)findViewById(R.id.Lista);
-
         /*ituneArrayAdapter = new ItuneArrayAdapter(this, R.layout.itunes_layout, new ArrayList<Itune>());
         listView.setAdapter(ituneArrayAdapter);*/
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
         listView.setAdapter(adapter);
+
         mQueue = VolleySingleton.getInstance(this).getRequestQueue();
         //new MarvelJson(adapter).execute();
         jsonMarvel(getMarvelString(), adapter);
@@ -88,7 +89,7 @@ public class MainActivity extends Activity {
                 //Si pudo consultar entra ahi
                 try {
                     JSONObject data = response.getJSONObject("data");
-                    JSONArray jsonArray = data.getJSONArray("response");
+                    JSONArray jsonArray = data.getJSONArray("results");
                     for (int i = 0; i<jsonArray.length();i++){
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
                         adapter.add(jsonObject.getString("name"));
@@ -103,6 +104,7 @@ public class MainActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 /**/
+                Toast.makeText(getApplicationContext(),error.toString(), Toast.LENGTH_LONG).show();
             }
         });
         mQueue.add(request);
@@ -111,10 +113,10 @@ public class MainActivity extends Activity {
     private String getMarvelString(){
         /*String ts = Long.toString(System.currentTimeMillis() / 1000);
         String apikey = "26129e6bc202039ef9aedaab3960cef4";
-        String hash = md5(ts + "3620ec531ec97f0f22c3c4c4205427b54aed575f" + "26129e6bc202039ef9aedaab3960cef4");*/
+        String hash = md5(ts + "3620ec531ec97f0f22c3c4c4205427b54aed575f" + "26129e6bc202039ef9aedaab3960cef4");
         //ArrayList<String> arrayList = new ArrayList<>();
 
-        /*
+        *//*
             Conexión con el getway de marvel
         *//*
         final String CHARACTER_BASE_URL = "http://gateway.marvel.com/v1/public/characters";
@@ -140,7 +142,7 @@ public class MainActivity extends Activity {
         return builtUri.toString();
     }
 
-    public String getMarvelSiguiente(View view){
+    public void getMarvelSiguiente(View view){
         Uri builtUri;
         if (Contador > 800){
             System.out.println("Llegaste al limite");
@@ -155,10 +157,10 @@ public class MainActivity extends Activity {
                 .appendQueryParameter("limit", "100")
                 .appendQueryParameter("offset", Contador+"")
                 .build();
-        return builtUri.toString();
+        jsonMarvel(builtUri.toString(), adapter);
     }
 
-    public String getMarvelAnterior(View view){
+    public void getMarvelAnterior(View view){
         Uri builtUri;
         if (Contador < 100){
             System.out.println("Llegaste al limite");
@@ -173,7 +175,7 @@ public class MainActivity extends Activity {
                 .appendQueryParameter("limit", "100")
                 .appendQueryParameter("offset", Contador+"")
                 .build();
-        return builtUri.toString();
+        jsonMarvel(builtUri.toString(), adapter);
     }
 
     /*
