@@ -16,7 +16,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.emilianocervantes.marvelapp.adapters.ItuneArrayAdapter;
+import com.example.emilianocervantes.marvelapp.adapters.MarvelAdapter;
 import com.example.emilianocervantes.marvelapp.pojo.Itune;
+import com.example.emilianocervantes.marvelapp.pojo.MarvelDude;
 
 
 import org.json.JSONArray;
@@ -39,8 +41,8 @@ public class MainActivity extends Activity {
 
     private ListView listView;
     //Adapter es el que dice cómo se va a cargar
-    private ArrayAdapter<String> adapter;
-    private ItuneArrayAdapter ituneArrayAdapter;
+    //private ArrayAdapter<String> adapter;
+    private MarvelAdapter marvelAdapter;
 
     private RequestQueue mQueue;
 
@@ -60,15 +62,19 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = (ListView)findViewById(R.id.Lista);
-        /*ituneArrayAdapter = new ItuneArrayAdapter(this, R.layout.itunes_layout, new ArrayList<Itune>());
-        listView.setAdapter(ituneArrayAdapter);*/
+        /*
+        ituneArrayAdapter = new ItuneArrayAdapter(this, R.layout.marvel_layout, new ArrayList<Itune>());
+        listView.setAdapter(ituneArrayAdapter);
+        */
 
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
-        listView.setAdapter(adapter);
+        marvelAdapter = new MarvelAdapter(this,R.layout.marvel_layout,new ArrayList<MarvelDude>());
+        // Este ya no sirve porque sólo nos mostraba los nombres
+        // adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+        listView.setAdapter(marvelAdapter);
 
         mQueue = VolleySingleton.getInstance(this).getRequestQueue();
         //new MarvelJson(adapter).execute();
-        jsonMarvel(getMarvelString(), adapter);
+        jsonMarvel(getMarvelString(), marvelAdapter);
 
         //new ProcesaJSON(ituneArrayAdapter).execute("https://itunes.apple.com/search?term=maroon+5");
     }
@@ -78,7 +84,7 @@ public class MainActivity extends Activity {
 
     private static char[] HEXCodes = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 
-    private void jsonMarvel(String url, final ArrayAdapter<String> adapter){
+    private void jsonMarvel(String url, final MarvelAdapter adapter){
         //Limpie el adapatador
         adapter.clear();
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
@@ -92,7 +98,10 @@ public class MainActivity extends Activity {
                     JSONArray jsonArray = data.getJSONArray("results");
                     for (int i = 0; i<jsonArray.length();i++){
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        adapter.add(jsonObject.getString("name"));
+                        MarvelDude marvelDude = new MarvelDude();
+                        marvelDude.name = jsonObject.getString("name");
+                        adapter.add(marvelDude);
+                        //adapter.add(jsonObject.getString("name"));
                     }
                     //Actualizar vista
                     adapter.notifyDataSetChanged();
@@ -157,7 +166,7 @@ public class MainActivity extends Activity {
                 .appendQueryParameter("limit", "100")
                 .appendQueryParameter("offset", Contador+"")
                 .build();
-        jsonMarvel(builtUri.toString(), adapter);
+        jsonMarvel(builtUri.toString(), marvelAdapter);
     }
 
     public void getMarvelAnterior(View view){
@@ -175,7 +184,7 @@ public class MainActivity extends Activity {
                 .appendQueryParameter("limit", "100")
                 .appendQueryParameter("offset", Contador+"")
                 .build();
-        jsonMarvel(builtUri.toString(), adapter);
+        jsonMarvel(builtUri.toString(), marvelAdapter);
     }
 
     /*

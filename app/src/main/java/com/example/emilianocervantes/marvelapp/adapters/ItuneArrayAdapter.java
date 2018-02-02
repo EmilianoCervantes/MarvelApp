@@ -35,12 +35,12 @@ public class ItuneArrayAdapter extends ArrayAdapter<Itune> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         //Primer forma, mandar al constructor la collection
-        Itune itune = arrayList.get(position);
+        /*Itune itune = arrayList.get(position);
         //
         //Itune itune = getItem(position);
         if (convertView == null){
             //LayoutInflater reconstruye una vista
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.itunes_layout,parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.marvel_layout,parent, false);
         }
 
         TextView collectioName = (TextView)convertView.findViewById(R.id.CollectionName);
@@ -52,5 +52,7 @@ public class ItuneArrayAdapter extends ArrayAdapter<Itune> {
 
         //Return ese renglon
         return convertView;
+        */
+        return null;
     }
 }
