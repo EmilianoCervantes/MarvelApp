@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -76,6 +77,18 @@ public class MainActivity extends Activity {
         //new MarvelJson(adapter).execute();
         jsonMarvel(getMarvelString(), marvelAdapter);
 
+        //onClickListener es a todo el objeto
+        // OnItem es solo para un elemento de la lista
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            //int i es la posicion en la lista
+            // long l es el id del renglon
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                MarvelDude md = marvelAdapter.getItem(i);
+                Toast.makeText(getApplicationContext(), md.id,Toast.LENGTH_LONG).show();
+            }
+        });
+
         //new ProcesaJSON(ituneArrayAdapter).execute("https://itunes.apple.com/search?term=maroon+5");
     }
 
@@ -97,11 +110,16 @@ public class MainActivity extends Activity {
                     JSONObject data = response.getJSONObject("data");
                     JSONArray jsonArray = data.getJSONArray("results");
                     for (int i = 0; i<jsonArray.length();i++){
+                        //Para el name
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        //Para la image
+                        JSONObject thumbnail = jsonObject.getJSONObject("thumbnail");
+                        String string = thumbnail.getString("path") + "/portrait_xlarge"+"."+thumbnail.getString("extension");
                         MarvelDude marvelDude = new MarvelDude();
+                        marvelDude.id = jsonObject.getLong("id")+"";
                         marvelDude.name = jsonObject.getString("name");
+                        marvelDude.url = string;
                         adapter.add(marvelDude);
-                        //adapter.add(jsonObject.getString("name"));
                     }
                     //Actualizar vista
                     adapter.notifyDataSetChanged();

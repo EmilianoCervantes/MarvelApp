@@ -5,5 +5,5 @@ package com.example.emilianocervantes.marvelapp.pojo;
  */
 
 public class MarvelDude {
-    public String name, url;
+    public String name, url, id;
 }

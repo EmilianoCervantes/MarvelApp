@@ -60,7 +60,7 @@ public class MarvelAdapter extends ArrayAdapter<MarvelDude> {
         });
 
         //Como esto se ejecuta y nos va a lanzar una imagen por renglon
-        networkImageView.setImageUrl("http://i.annihil.us/u/prod/marvel/i/mg/3/40/4bb4680432f73/portrait_xlarge.jpg", imageLoader);
+        networkImageView.setImageUrl(marvelDude.url, imageLoader);
 
         //return view;
         return convertView;
